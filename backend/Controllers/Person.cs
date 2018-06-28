@@ -30,10 +30,14 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login([FromBody] Person Person)
+        public async Task<IActionResult> Login([FromBody] Person person)
         {
-            Person attempt = repo.Auth(Person);
+            if (person.Username == null || person.Password == null)
+            {
+                return BadRequest();
+            }
 
+            Person attempt = repo.Auth(person);
             if (attempt == null)
             {
                 return new UnauthorizedResult();
@@ -61,6 +65,25 @@ namespace backend.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
             return new OkResult();
+        }
+
+        [HttpPost("register")]
+        public IActionResult Register([FromBody] Person person)
+        {
+            if (person.Username == null || person.Password == null)
+            {
+                return BadRequest();
+            }
+            
+            bool created = this.repo.Create(person);
+            if (created)
+            {
+                return new OkResult();
+            }
+            else
+            {
+                return new ConflictResult();
+            }
         }
     }
 }

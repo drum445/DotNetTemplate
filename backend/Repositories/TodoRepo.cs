@@ -13,7 +13,8 @@ namespace backend.Repositories
             using (var connection = this.GetConn())
             {
                 connection.Open();
-                var command = new MySqlCommand("SELECT 'a' as 'title', 'b' as 'body' FROM DUAL;", connection);
+                var command = new MySqlCommand("SELECT todo_id, title, body FROM todo WHERE person_id = @personId;", connection);
+                command.Parameters.AddWithValue("personId", personId);
 
                 using (var reader = command.ExecuteReader())
                 {
@@ -21,9 +22,10 @@ namespace backend.Repositories
                     {
                         var title = reader["title"].ToString();
                         var body = reader["body"].ToString();
-                        var todo = new Todo(title, body, personId);
-                        todo.Id = "1234";
-                        
+                        // null the personId as we want to omit from resp
+                        var todo = new Todo(title, body, null);
+                        todo.Id = reader["todo_id"].ToString();
+
                         todos.Add(todo);
                     }
                 }
@@ -34,6 +36,18 @@ namespace backend.Repositories
         public Todo Create(Todo todo)
         {
             todo.Id = Guid.NewGuid().ToString();
+
+            using (var connection = this.GetConn())
+            {
+                connection.Open();
+                var command = new MySqlCommand("INSERT INTO todo VALUES(@id, @title, @body, @person);", connection);
+                command.Parameters.AddWithValue("id", todo.Id);
+                command.Parameters.AddWithValue("title", todo.Title);
+                command.Parameters.AddWithValue("body", todo.Body);
+                command.Parameters.AddWithValue("person", todo.PersonId);
+                command.ExecuteNonQuery();
+            }
+
             return todo;
         }
     }

@@ -8,7 +8,7 @@ namespace backend.Repositories
         {
             return new MySqlConnection
             {
-                ConnectionString = "server=localhost;user id=root;password=password;persistsecurityinfo=True;port=3306;database=test;SslMode=None"
+                ConnectionString = "server=localhost;user id=root;password=password;persistsecurityinfo=True;port=3306;database=template;SslMode=None"
             };
         }
     }

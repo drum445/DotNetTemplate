@@ -31,10 +31,11 @@ namespace backend.Controllers
 
             todo.PersonId = helper.GetPersonId(User);
             todo = repo.Create(todo);
+            // null personId as we don't want it in resp
+            todo.PersonId = null;
 
             return new ObjectResult(todo);
         }
-
 
         [HttpGet]
         public ActionResult<IEnumerable<string>> Read()

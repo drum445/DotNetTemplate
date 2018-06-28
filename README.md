@@ -1,9 +1,14 @@
+## Prereqs
+Local instance of MySQL/MariaDB (run dbinit.sql)
+Local install of dotnet core
+
 ## Running
+#### First time
+$ dotnet restore
 
 #### Dev
 $ dotnet run dev
 #### Prod
-**Only need sudo if using SSL**
 $ sudo ./backend
 
 ## Building
@@ -14,7 +19,7 @@ $ dotnet publish -c Release -r ubuntu.18.04-x64
 **View tasks**  
 GET: http://localhost:5000/api/todo
 
-**Create new task, doesn't insert into db**  
+**Create new task and insert into db**  
 POST: http://localhost:5000/api/todo
 ```
 {
@@ -27,7 +32,7 @@ POST: http://localhost:5000/api/todo
 **Check if user is logged in, if so return username**  
 GET: http://localhost:5000/api/person
 
-**Attempt to login, accepts where username = "drum"**  
+**Attempt to login**  
 POST: http://localhost:5000/api/person
 ```
 {
@@ -36,6 +41,14 @@ POST: http://localhost:5000/api/person
 }
 ```
 
+**Register**  
+POST: http://localhost:5000/api/person/register
+```
+{
+	"username": "drum",
+	"password": "password"
+}
+```
 
 **Logout user and clear session**  
 POST: http://localhost:5000/api/person/logout
