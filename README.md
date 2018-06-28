@@ -1,5 +1,5 @@
 ## Prereqs
-Local instance of MySQL/MariaDB (run dbinit.sql)
+Local instance of MySQL/MariaDB (run dbinit.sql)  
 Local install of dotnet core
 
 ## Running
