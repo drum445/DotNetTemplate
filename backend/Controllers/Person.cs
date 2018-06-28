@@ -46,7 +46,7 @@ namespace backend.Controllers
             var identity = new ClaimsIdentity(new[]
             {
                 new Claim(ClaimTypes.Name, attempt.Username),
-                new Claim("Id", attempt.Id),
+                new Claim("Id", attempt.Id.ToString()),
             }, CookieAuthenticationDefaults.AuthenticationScheme);
 
             var principal = new ClaimsPrincipal(identity);
@@ -74,7 +74,7 @@ namespace backend.Controllers
             {
                 return BadRequest();
             }
-            
+
             bool created = this.repo.Create(person);
             if (created)
             {

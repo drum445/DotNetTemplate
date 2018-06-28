@@ -6,6 +6,7 @@ namespace backend.Models
 {
     public class Person
     {
+        public Person() { }
 
         public Person(string username, string password)
         {
@@ -13,14 +14,14 @@ namespace backend.Models
             this.Password = password;
         }
 
-        public string Id { get; set; }
+        public Guid Id { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
 
         public void HashPassword()
         {
             // use our personId as the salt as it is a guid
-            byte[] salt = Encoding.ASCII.GetBytes(this.Id);
+            byte[] salt = Encoding.ASCII.GetBytes(this.Id.ToString());
             // derive a 256-bit subkey (use HMACSHA1 with 10,000 iterations)
             string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
                 password: this.Password,

@@ -1,6 +1,7 @@
 using System;
 using backend.Models;
 using MySql.Data.MySqlClient;
+using Dapper;
 
 namespace backend.Repositories
 {
@@ -15,16 +16,12 @@ namespace backend.Repositories
 
             using (var connection = this.GetConn())
             {
-                connection.Open();
-
-                person.Id = Guid.NewGuid().ToString();
+                person.Id = Guid.NewGuid();
                 person.HashPassword();
 
-                var insertCmd = new MySqlCommand("INSERT INTO person VALUES(@id, @username, @password);", connection);
-                insertCmd.Parameters.AddWithValue("id", person.Id);
-                insertCmd.Parameters.AddWithValue("username", person.Username);
-                insertCmd.Parameters.AddWithValue("password", person.Password);
-                insertCmd.ExecuteNonQuery();
+                connection.Open();
+                var query = "INSERT INTO person VALUES(@id, @username, @password);";
+                connection.Execute(query, person);
             }
 
             return true;
@@ -37,15 +34,8 @@ namespace backend.Repositories
             using (var connection = this.GetConn())
             {
                 connection.Open();
-                var command = new MySqlCommand("SELECT COUNT(*) FROM person WHERE username = @username;", connection);
-                command.Parameters.AddWithValue("username", person.Username);
-
-                var reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    count = reader.GetInt32(0);
-                }
-                reader.Close();
+                var query = "SELECT COUNT(*) FROM person WHERE username = @username;";
+                count = connection.ExecuteScalar<Int32>(query, person);
             }
 
             return count;
@@ -64,18 +54,8 @@ namespace backend.Repositories
             using (var connection = this.GetConn())
             {
                 connection.Open();
-                var command = new MySqlCommand("SELECT * FROM person WHERE username = @username;", connection);
-                command.Parameters.AddWithValue("username", person.Username);
-
-                var reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    var username = reader.GetString(1);
-                    var password = reader.GetString(2);
-                    foundPerson = new Person(username, password);
-                    foundPerson.Id = reader["person_id"].ToString();
-                }
-                reader.Close();
+                var query = "SELECT person_id as id, username, password FROM person WHERE username = @username;";
+                foundPerson = connection.QuerySingle<Person>(query, person);
             }
 
             // check the hash in the db matches the hash of the p/w supplied
@@ -88,7 +68,6 @@ namespace backend.Repositories
 
             // if hash doesn't match
             return null;
-
         }
     }
 }

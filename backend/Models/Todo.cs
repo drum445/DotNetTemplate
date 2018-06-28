@@ -1,17 +1,22 @@
+using System;
+
 namespace backend.Repositories
 {
     public class Todo
     {
-        public Todo(string title, string body, string personId)
+        public Todo() { }
+
+        public Todo(Guid id, string title, string body, Guid personId)
         {
+            this.Id = id;
             this.Title = title;
             this.Body = body;
             this.PersonId = personId;
         }
 
-        public string Id { get; set; }
+        public Guid Id { get; set; }
         public string Title { get; set; }
         public string Body { get; set; }
-        public string PersonId { get; set; }
+        public Guid? PersonId { get; set; }
     }
 }
