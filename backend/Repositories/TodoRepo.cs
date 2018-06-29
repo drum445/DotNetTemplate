@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using MySql.Data.MySqlClient;
 using Dapper;
+using backend.Models;
 
 namespace backend.Repositories
 {

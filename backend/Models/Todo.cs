@@ -1,6 +1,6 @@
 using System;
 
-namespace backend.Repositories
+namespace backend.Models
 {
     public class Todo
     {

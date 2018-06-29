@@ -9,6 +9,10 @@ namespace backend.Repositories
     {
         public bool Create(Person person)
         {
+            // perform the hash first to prevent timing attacks
+            person.Id = Guid.NewGuid();
+            person.HashPassword();
+
             if (this.Exists(person) == 1)
             {
                 return false;
@@ -16,9 +20,6 @@ namespace backend.Repositories
 
             using (var connection = this.GetConn())
             {
-                person.Id = Guid.NewGuid();
-                person.HashPassword();
-
                 connection.Open();
                 var query = "INSERT INTO person VALUES(@id, @username, @password);";
                 connection.Execute(query, person);
@@ -30,11 +31,10 @@ namespace backend.Repositories
         private Int32 Exists(Person person)
         {
             var count = 1;
-
             using (var connection = this.GetConn())
             {
                 connection.Open();
-                var query = "SELECT COUNT(*) FROM person WHERE username = @username;";
+                var query = "SELECT COUNT(person_id) FROM person WHERE username = @username;";
                 count = connection.ExecuteScalar<Int32>(query, person);
             }
 
