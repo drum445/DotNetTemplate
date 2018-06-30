@@ -10,6 +10,7 @@ using System.Security.Claims;
 namespace backend.Controllers
 {
     [Route("api/[controller]")]
+    [ApiController]
     public class PersonController : Controller
     {
         protected PersonRepo repo;
@@ -52,8 +53,11 @@ namespace backend.Controllers
             var principal = new ClaimsPrincipal(identity);
 
             await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                principal
+                CookieAuthenticationDefaults.AuthenticationScheme, principal,
+                new AuthenticationProperties
+                {
+                    ExpiresUtc = DateTime.UtcNow.AddDays(14)
+                }
             );
 
             return new OkResult();

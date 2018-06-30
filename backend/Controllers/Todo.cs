@@ -13,12 +13,10 @@ namespace backend.Controllers
     public class TodoController : ControllerBase
     {
         protected TodoRepo repo;
-        protected UserHelper helper;
 
         public TodoController()
         {
             this.repo = new TodoRepo();
-            this.helper = new UserHelper();
         }
 
         [HttpPost]
@@ -29,7 +27,7 @@ namespace backend.Controllers
                 return BadRequest();
             }
 
-            todo.PersonId = helper.GetPersonId(User);
+            todo.PersonId = UserHelper.GetPersonId(User);
             todo = repo.Create(todo);
             // null personId as we don't want it in resp
             todo.PersonId = null;
@@ -40,7 +38,7 @@ namespace backend.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<string>> Read()
         {
-            var personId = helper.GetPersonId(User);
+            var personId = UserHelper.GetPersonId(User);
             var todos = repo.Get(personId);
             return new OkObjectResult(todos);
         }

@@ -1,6 +1,5 @@
 using System;
 using backend.Models;
-using MySql.Data.MySqlClient;
 using Dapper;
 
 namespace backend.Repositories
