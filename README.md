@@ -28,6 +28,18 @@ POST: http://localhost:5000/api/todo
 }
 ```
 
+**Update task**  
+PUT: http://localhost:5000/api/todo/:todoId
+```
+{
+	"title": "Task title",
+	"body": "task description"
+}
+```
+
+**Delete task**  
+DELETE: http://localhost:5000/api/todo/:todoId
+
 ### Person
 **Check if user is logged in, if so return username**  
 GET: http://localhost:5000/api/person
