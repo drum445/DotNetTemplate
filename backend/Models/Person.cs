@@ -18,7 +18,7 @@ namespace backend.Models
         public string Username { get; set; }
         public string Password { get; set; }
 
-        public void HashPassword()
+        public void HashPasswordAlt()
         {
             // use our personId as the salt as it is a guid
             byte[] salt = Encoding.ASCII.GetBytes(this.Id.ToString());
@@ -31,6 +31,16 @@ namespace backend.Models
                 numBytesRequested: 256 / 8));
 
             this.Password = hashed;
+        }
+
+        public void HashPassword()
+        {
+            this.Password = BCrypt.Net.BCrypt.HashPassword(this.Password);            
+        }
+
+        public Boolean CheckPassword(string hashedPassword)
+        {
+            return BCrypt.Net.BCrypt.Verify(this.Password, hashedPassword);
         }
     }
 }

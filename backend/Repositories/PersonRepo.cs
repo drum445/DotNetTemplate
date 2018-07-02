@@ -8,7 +8,6 @@ namespace backend.Repositories
     {
         public bool Create(Person person)
         {
-            // perform the hash first to prevent timing attacks
             person.Id = Guid.NewGuid();
             person.HashPassword();
 
@@ -49,20 +48,18 @@ namespace backend.Repositories
             }
 
             // load the person into memory 
-            Person foundPerson = null;
+            Person dbPerson = null;
             using (var connection = this.GetConn())
             {
                 connection.Open();
                 var query = "SELECT person_id as id, username, password FROM person WHERE username = @username;";
-                foundPerson = connection.QuerySingle<Person>(query, person);
+                dbPerson = connection.QuerySingle<Person>(query, person);
             }
 
-            // check the hash in the db matches the hash of the p/w supplied
-            person.Id = foundPerson.Id;
-            person.HashPassword();
-            if (person.Password == foundPerson.Password)
+            // check the supplied password matches what is saved in the db
+            if (person.CheckPassword(dbPerson.Password))
             {
-                return foundPerson;
+                return dbPerson;
             }
 
             // if hash doesn't match

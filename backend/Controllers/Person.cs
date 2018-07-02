@@ -6,6 +6,7 @@ using backend.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace backend.Controllers
 {
@@ -20,13 +21,10 @@ namespace backend.Controllers
             repo = new PersonRepo();
         }
 
+        [Authorize]
         [HttpGet]
         public IActionResult AmILoggedIn()
         {
-            if (User.Identity.Name == null)
-            {
-                return new UnauthorizedResult();
-            }
             return new OkObjectResult(User.Identity.Name);
         }
 
@@ -38,12 +36,23 @@ namespace backend.Controllers
                 return BadRequest();
             }
 
-            Person attempt = repo.Auth(person);
+            Person attempt = null;
+
+            // add a delay to the login call of 1.5 seconds to prevent timing attacks
+            var delay = Task.Delay(1500);
+            var login = Task.Run(() =>
+            {
+                attempt = repo.Auth(person);
+            });
+            await delay;
+
+            // if the attempt was invalid
             if (attempt == null)
             {
                 return new UnauthorizedResult();
             }
 
+            // if the creds were correct setup our cookie/claims
             var identity = new ClaimsIdentity(new[]
             {
                 new Claim(ClaimTypes.Name, attempt.Username),
@@ -67,7 +76,6 @@ namespace backend.Controllers
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-
             return new OkResult();
         }
 
@@ -84,10 +92,8 @@ namespace backend.Controllers
             {
                 return new OkResult();
             }
-            else
-            {
-                return new ConflictResult();
-            }
+
+            return new ConflictResult();
         }
     }
 }

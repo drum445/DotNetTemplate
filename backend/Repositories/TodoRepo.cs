@@ -46,7 +46,7 @@ namespace backend.Repositories
             return true;
         }
 
-        public Boolean Delete(string todoId, Guid personId)
+        public Boolean Delete(Guid todoId, Guid personId)
         {
             using (var connection = this.GetConn())
             {

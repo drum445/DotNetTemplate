@@ -33,7 +33,7 @@ namespace backend.Controllers
             // null personId as we don't want it in resp
             todo.PersonId = null;
 
-            return new ObjectResult(todo);
+            return new OkObjectResult(todo);
         }
 
         [HttpGet]
@@ -45,21 +45,14 @@ namespace backend.Controllers
         }
 
         [HttpPut("{todoId}")]
-        public IActionResult Update(string todoId, [FromBody] Todo todo)
+        public IActionResult Update(Guid todoId, [FromBody] Todo todo)
         {
             if (todo.Title == null || todo.Body == null)
             {
                 return BadRequest();
             }
 
-            Guid newGuid;
-
-            if(!Guid.TryParse(todoId, out newGuid))
-            {
-                return new BadRequestObjectResult("Invalid id format supplied");
-            }
-
-            todo.Id = newGuid;
+            todo.Id = todoId;
             todo.PersonId = UserHelper.GetPersonId(User);
             repo.Update(todo);
             todo.PersonId = null;
@@ -68,14 +61,8 @@ namespace backend.Controllers
         }
 
         [HttpDelete("{todoId}")]
-        public ActionResult<IEnumerable<string>> Delete(string todoId)
+        public ActionResult<IEnumerable<string>> Delete(Guid todoId)
         {
-            // test for guid but don't use the result
-            if(!Guid.TryParse(todoId, out var _))
-            {
-                return new BadRequestObjectResult("Invalid id format supplied");
-            }
-
             var personId = UserHelper.GetPersonId(User);
             var todos = repo.Delete(todoId, personId);
             return new NoContentResult();
