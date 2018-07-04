@@ -6,14 +6,6 @@ namespace backend.Models
 {
     public class Person
     {
-        public Person() { }
-
-        public Person(string username, string password)
-        {
-            this.Username = username;
-            this.Password = password;
-        }
-
         public Guid Id { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
